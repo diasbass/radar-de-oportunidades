@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(cuid())
+  walletAddress String @unique
+  createdAt DateTime   @default(now())
+  favorites Favorite[]
+}
+
+model Favorite {
+  id            String   @id @default(cuid())
+  userId        String
+  opportunityId String // Este será o ID da pool que vem do DeFiLlama
+  createdAt     DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, opportunityId]) // Garante que um usuário só pode favoritar uma vez
+}

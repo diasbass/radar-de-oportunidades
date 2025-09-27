@@ -9,5 +9,11 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.13.1"
+  "packageManager": "pnpm@10.13.1",
+  "dependencies": {
+    "styled-components": "^6.1.19"
+  },
+  "devDependencies": {
+    "@types/styled-components": "^5.1.34"
+  }
 }
