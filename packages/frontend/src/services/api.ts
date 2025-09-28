@@ -34,3 +34,9 @@ export async function fetchFavorites(walletAddress: string): Promise<string[]> {
 export async function addFavorite(walletAddress: string, opportunityId: string) {
   return axios.post('/api/favorites', { walletAddress, opportunityId });
 }
+
+// --- NOVA FUNÇÃO ---
+export async function removeFavorite(walletAddress: string, opportunityId: string) {
+  // O método é 'delete', e passamos os dados no corpo da requisição
+  return axios.delete('/api/favorites', { data: { walletAddress, opportunityId } });
+}

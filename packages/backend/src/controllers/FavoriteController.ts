@@ -34,5 +34,24 @@ class FavoriteController {
 
     return res.status(200).json(favoriteIds);
   }
+
+  // reusamos o mesmo schema, pois os dados necessários são os mesmos
+public async delete(req: Request, res: Response): Promise<Response> {
+  try {
+    const { walletAddress, opportunityId } = createFavoriteSchema.parse(req.body);
+
+    const userService = new UserService();
+    // Usamos findOrCreate aqui por segurança, caso o usuário não esteja logado no nosso DB ainda
+    const user = await userService.findOrCreate(walletAddress);
+
+    const favoriteService = new FavoriteService();
+    await favoriteService.delete(user.id, opportunityId);
+
+    // 204 No Content é a resposta padrão para um delete bem-sucedido
+    return res.status(204).send();
+  } catch (error) {
+    return res.status(400).json({ message: 'Invalid data or favorite not found.' });
+  }
+}
 }
 export default FavoriteController;

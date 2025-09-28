@@ -29,6 +29,7 @@ app.get('/api/opportunities', opportunitiesController.handle);
 app.post('/api/users', userController.handle);
 
 app.post('/api/favorites', favoriteController.create);
+app.delete('/api/favorites', favoriteController.delete);
 app.get('/api/favorites/:walletAddress', favoriteController.list);
 
 

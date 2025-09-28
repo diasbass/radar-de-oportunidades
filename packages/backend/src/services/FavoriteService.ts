@@ -18,5 +18,18 @@ class FavoriteService {
     });
     return favorites.map(f => f.opportunityId);
   }
+
+  // Deleta um favorito
+  public async delete(userId: string, opportunityId: string) {
+    return prisma.favorite.delete({
+      where: {
+        // Esta é a forma do Prisma de encontrar um registro por uma chave única composta
+        userId_opportunityId: {
+          userId,
+          opportunityId,
+        },
+      },
+    });
+  }
 }
 export default FavoriteService;
