@@ -13,8 +13,7 @@ import {
   loginUser,
   createAlert,
   fetchAlerts,
-  deleteAlert,
-  Alert,
+  deleteAlert,  
   Opportunity,
 } from "../services/api";
 

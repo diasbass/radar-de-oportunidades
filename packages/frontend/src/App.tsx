@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { OpportunityList } from './components/OpportunityList';
-import { GlobalStyle } from './styles/GlobalStyle';
+// A importação do GlobalStyle foi REMOVIDA daqui
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { EmailSettings } from './components/EmailSettings';
 import { UpgradeButton } from './components/UpgradeButton';
@@ -9,6 +9,7 @@ import { useAccount } from 'wagmi';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchUser, User } from './services/api';
 import { SubscriptionStatus } from './components/SubscriptionStatus';
+import { LandingPage } from './components/LandingPage';
 
 // --- Styled Components ---
 const PageContainer = styled.div`
@@ -54,8 +55,8 @@ const HeaderActions = styled.div`
   gap: 1rem;
 `;
 
-// --- Componente Principal ---
-function App() {
+// --- Componente para o conteúdo principal do App ---
+function AppContent() {
   const { address, isConnected } = useAccount();
   const queryClient = useQueryClient();
 
@@ -68,14 +69,12 @@ function App() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('payment_success')) {
-      // Força a recarga dos dados do usuário se o pagamento foi bem-sucedido
       queryClient.invalidateQueries({ queryKey: ['user', address] });
     }
   }, [address, queryClient]);
 
   return (
     <PageContainer>
-      <GlobalStyle />
       <Header>
         <HeaderContainer>
           <TitleBlock>
@@ -83,7 +82,6 @@ function App() {
             <Subtitle>DeFi yields, simplified.</Subtitle>
           </TitleBlock>
           <HeaderActions>
-            {/* Renderização condicional: mostra Upgrade ou o Status PRO */}
             {isConnected && user?.subscriptionStatus === 'FREE' && <UpgradeButton />}
             {isConnected && user?.subscriptionStatus === 'PRO' && <SubscriptionStatus />}
             <ConnectButton />
@@ -100,6 +98,20 @@ function App() {
       </MainContent>
     </PageContainer>
   );
+}
+
+// --- Componente App agora controla qual página mostrar ---
+function App() {
+  const [appLaunched, setAppLaunched] = useState(false);
+
+  // Se o app não foi "lançado", mostra a Landing Page
+  if (!appLaunched) {
+    // O <GlobalStyle /> foi REMOVIDO daqui
+    return <LandingPage onLaunchApp={() => setAppLaunched(true)} />;
+  }
+
+  // Se foi lançado, mostra o conteúdo principal do app
+  return <AppContent />;
 }
 
 export default App;

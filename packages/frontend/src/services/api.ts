@@ -24,55 +24,63 @@ export interface User {
   walletAddress: string;
   email: string | null;
   subscriptionStatus: 'FREE' | 'PRO';
+  subscriptionEndsAt?: string | null;
+  stripeCustomerId?: string | null;
 }
 
-export async function fetchUser(walletAddress: string): Promise<User> {
-  const { data } = await axios.post('/api/users', { walletAddress });
+// --- Configuração Centralizada do Axios ---
+const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || '/api',
+});
+
+
+// --- Funções da API (agora usando apiClient) ---
+
+export async function fetchOpportunities(): Promise<Opportunity[]> {
+  const { data } = await apiClient.get('/opportunities');
   return data;
 }
 
-// --- Funções da API ---
-
-export async function fetchOpportunities(): Promise<Opportunity[]> {
-  const { data } = await axios.get('/api/opportunities');
+export async function fetchUser(walletAddress: string): Promise<User> {
+  const { data } = await apiClient.post('/users', { walletAddress });
   return data;
 }
 
 export async function loginUser(walletAddress: string) {
-  return axios.post('/api/users', { walletAddress });
+  return apiClient.post('/users', { walletAddress });
 }
 
 export async function updateEmail(walletAddress: string, email: string) {
-  return axios.patch(`/api/users/${walletAddress}`, { email });
+  return apiClient.patch(`/users/${walletAddress}`, { email });
 }
 
 export async function fetchFavorites(walletAddress: string): Promise<string[]> {
-  const { data } = await axios.get(`/api/favorites/${walletAddress}`);
+  const { data } = await apiClient.get(`/favorites/${walletAddress}`);
   return data;
 }
 
 export async function addFavorite(walletAddress: string, opportunityId: string) {
-  return axios.post('/api/favorites', { walletAddress, opportunityId });
+  return apiClient.post('/favorites', { walletAddress, opportunityId });
 }
 
 export async function removeFavorite(walletAddress: string, opportunityId: string) {
-  return axios.delete('/api/favorites', { data: { walletAddress, opportunityId } });
+  return apiClient.delete('/favorites', { data: { walletAddress, opportunityId } });
 }
 
 export async function createAlert(walletAddress: string, opportunityId: string, targetApy: number) {
-  return axios.post('/api/alerts', { walletAddress, opportunityId, targetApy });
+  return apiClient.post('/alerts', { walletAddress, opportunityId, targetApy });
 }
 
 export async function fetchAlerts(walletAddress: string): Promise<Alert[]> {
-  const { data } = await axios.get(`/api/alerts/${walletAddress}`);
+  const { data } = await apiClient.get(`/alerts/${walletAddress}`);
   return data;
 }
 
 export async function deleteAlert(walletAddress: string, alertId: string) {
-  return axios.delete(`/api/alerts/${alertId}`, { data: { walletAddress } });
+  return apiClient.delete(`/alerts/${alertId}`, { data: { walletAddress } });
 }
 
 export async function createCheckoutSession(walletAddress: string): Promise<{ url: string }> {
-  const { data } = await axios.post('/api/billing/create-checkout-session', { walletAddress });
+  const { data } = await apiClient.post('/billing/create-checkout-session', { walletAddress });
   return data;
 }
