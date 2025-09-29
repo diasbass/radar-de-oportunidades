@@ -8,19 +8,38 @@ datasource db {
 }
 
 model User {
-  id        String     @id @default(cuid())
-  walletAddress String @unique
-  createdAt DateTime   @default(now())
-  favorites Favorite[]
+  id            String     @id @default(cuid())
+  walletAddress String     @unique
+  email         String?    @unique // CAMPO NOVO: para guardar o email (opcional)
+  createdAt     DateTime   @default(now())
+  
+  favorites     Favorite[]
+  alerts        Alert[]    // RELAÇÃO NOVA: um usuário pode ter vários alertas
 }
 
 model Favorite {
   id            String   @id @default(cuid())
   userId        String
-  opportunityId String // Este será o ID da pool que vem do DeFiLlama
+  opportunityId String
+  createdAt     DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, opportunityId])
+}
+
+
+// --- NOVO MODELO DE ALERTAS ---
+model Alert {
+  id            String   @id @default(cuid())
+  userId        String
+  opportunityId String   // ID da pool que estamos monitorando
+  targetApy     Float    // O APY que o usuário quer ser notificado (ex: 5.5 para 5.5%)
+  isActive      Boolean  @default(true) // Para poder pausar alertas
   createdAt     DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, opportunityId]) // Garante que um usuário só pode favoritar uma vez
+  // Garante que um usuário só pode ter um alerta por oportunidade
+  @@unique([userId, opportunityId])
 }
