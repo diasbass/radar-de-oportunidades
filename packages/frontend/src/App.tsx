@@ -1,61 +1,78 @@
+import { useEffect } from 'react';
 import styled from 'styled-components';
 import { OpportunityList } from './components/OpportunityList';
 import { GlobalStyle } from './styles/GlobalStyle';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { EmailSettings } from './components/EmailSettings'; 
+import { EmailSettings } from './components/EmailSettings';
+import { UpgradeButton } from './components/UpgradeButton';
+import { useAccount } from 'wagmi';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { fetchUser, User } from './services/api';
+import { SubscriptionStatus } from './components/SubscriptionStatus';
 
 // --- Styled Components ---
-
 const PageContainer = styled.div`
   min-height: 100vh;
 `;
-
-// O Header agora tem um padding vertical para mais respiro.
 const Header = styled.header`
   border-bottom: 1px solid #334155;
   padding: 1rem 0;
 `;
-
-// O Container é o responsável por centralizar e limitar a largura.
 const Container = styled.div`
   max-width: 800px;
   margin: 0 auto;
-  padding: 0 1.5rem; /* Padding horizontal para telas menores */
+  padding: 0 1.5rem;
 `;
-
-// NOVO: Container específico para o Header, com flexbox para o alinhamento.
 const HeaderContainer = styled(Container)`
   display: flex;
   justify-content: space-between;
   align-items: center;
 `;
-
-const TitleBlock = styled.div``; // Div para agrupar título e subtítulo
-
+const TitleBlock = styled.div``;
 const Title = styled.h1`
   font-size: 1.875rem;
   font-weight: bold;
   color: #22d3ee;
   margin: 0;
 `;
-
 const Subtitle = styled.p`
   color: #94a3b8;
   margin-top: 0.25rem;
   margin-bottom: 0;
 `;
-
 const MainContent = styled.main`
   padding: 1.5rem 0;
 `;
-
 const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 `;
+const HeaderActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+`;
 
+// --- Componente Principal ---
 function App() {
+  const { address, isConnected } = useAccount();
+  const queryClient = useQueryClient();
+
+  const { data: user } = useQuery<User>({
+    queryKey: ['user', address],
+    queryFn: () => fetchUser(address!),
+    enabled: !!address,
+  });
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('payment_success')) {
+      // Força a recarga dos dados do usuário se o pagamento foi bem-sucedido
+      queryClient.invalidateQueries({ queryKey: ['user', address] });
+    }
+  }, [address, queryClient]);
+
   return (
     <PageContainer>
       <GlobalStyle />
@@ -65,14 +82,18 @@ function App() {
             <Title>DeFi Yield Finder</Title>
             <Subtitle>DeFi yields, simplified.</Subtitle>
           </TitleBlock>
-          <ConnectButton />
+          <HeaderActions>
+            {/* Renderização condicional: mostra Upgrade ou o Status PRO */}
+            {isConnected && user?.subscriptionStatus === 'FREE' && <UpgradeButton />}
+            {isConnected && user?.subscriptionStatus === 'PRO' && <SubscriptionStatus />}
+            <ConnectButton />
+          </HeaderActions>
         </HeaderContainer>
       </Header>
       <MainContent>
         <Container>
           <ContentWrapper>
             <EmailSettings />
-            {/* O AlertsDashboard será adicionado aqui depois */}
             <OpportunityList />
           </ContentWrapper>
         </Container>

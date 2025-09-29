@@ -7,14 +7,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Define os status de assinatura possíveis
+enum SubscriptionStatus {
+  FREE
+  PRO
+}
+
 model User {
   id            String     @id @default(cuid())
   walletAddress String     @unique
-  email         String?    @unique // CAMPO NOVO: para guardar o email (opcional)
+  email         String?    @unique
   createdAt     DateTime   @default(now())
-  
-  favorites     Favorite[]
-  alerts        Alert[]    // RELAÇÃO NOVA: um usuário pode ter vários alertas
+
+  // --- CAMPOS FALTANTES ADICIONADOS AQUI ---
+  stripeCustomerId   String?            @unique
+  subscriptionStatus SubscriptionStatus @default(FREE)
+  subscriptionEndsAt DateTime?
+
+  favorites Favorite[]
+  alerts    Alert[]
 }
 
 model Favorite {
@@ -24,22 +35,19 @@ model Favorite {
   createdAt     DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   @@unique([userId, opportunityId])
 }
 
-
-// --- NOVO MODELO DE ALERTAS ---
 model Alert {
   id            String   @id @default(cuid())
   userId        String
-  opportunityId String   // ID da pool que estamos monitorando
-  targetApy     Float    // O APY que o usuário quer ser notificado (ex: 5.5 para 5.5%)
-  isActive      Boolean  @default(true) // Para poder pausar alertas
+  opportunityId String
+  targetApy     Float
+  isActive      Boolean  @default(true)
   createdAt     DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Garante que um usuário só pode ter um alerta por oportunidade
   @@unique([userId, opportunityId])
 }

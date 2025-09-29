@@ -19,6 +19,18 @@ export interface Alert {
   createdAt: string;
 }
 
+export interface User {
+  id: string;
+  walletAddress: string;
+  email: string | null;
+  subscriptionStatus: 'FREE' | 'PRO';
+}
+
+export async function fetchUser(walletAddress: string): Promise<User> {
+  const { data } = await axios.post('/api/users', { walletAddress });
+  return data;
+}
+
 // --- Funções da API ---
 
 export async function fetchOpportunities(): Promise<Opportunity[]> {
@@ -58,4 +70,9 @@ export async function fetchAlerts(walletAddress: string): Promise<Alert[]> {
 
 export async function deleteAlert(walletAddress: string, alertId: string) {
   return axios.delete(`/api/alerts/${alertId}`, { data: { walletAddress } });
+}
+
+export async function createCheckoutSession(walletAddress: string): Promise<{ url: string }> {
+  const { data } = await axios.post('/api/billing/create-checkout-session', { walletAddress });
+  return data;
 }
