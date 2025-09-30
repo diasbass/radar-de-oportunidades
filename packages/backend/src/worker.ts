@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import axios from 'axios';
 import EmailService from './services/EmailService';
 
+// Duplicamos a interface aqui para o worker ser independente
 interface Opportunity {
   id: string;
   project: string;
@@ -14,14 +15,12 @@ interface Opportunity {
 const prisma = new PrismaClient();
 const emailService = new EmailService();
 
-// Esta é a função principal do nosso worker
 export async function checkAlerts() {
   console.log('--- Iniciando verificação de alertas ---');
 
-  // 1. Busca todos os alertas que estão ativos no nosso banco de dados
   const activeAlerts = await prisma.alert.findMany({
     where: { isActive: true },
-    include: { user: true }, // Inclui os dados do usuário (para pegarmos o email)
+    include: { user: true },
   });
 
   if (activeAlerts.length === 0) {
@@ -31,28 +30,23 @@ export async function checkAlerts() {
 
   console.log(`Encontrados ${activeAlerts.length} alertas ativos.`);
 
-  // 2. Busca os dados mais recentes de TODAS as oportunidades do DeFi Llama
   const { data } = await axios.get('https://yields.llama.fi/pools');
   const opportunities: Opportunity[] = data.data;
 
-  // 3. Itera sobre cada alerta e verifica a condição
   for (const alert of activeAlerts) {
-    // Encontra a oportunidade correspondente ao alerta
     const opportunity = opportunities.find(op => op.id === alert.opportunityId);
 
-    // Se a oportunidade não existe mais ou não tem email, pulamos
     if (!opportunity || !alert.user.email) {
       continue;
     }
 
+    // Renomeamos para 'currentApy' para clareza
     const currentApy = opportunity.apy;
     const targetApy = alert.targetApy;
 
-    // 4. A CONDIÇÃO: O APY atual ultrapassou o APY alvo do alerta?
     if (currentApy > targetApy) {
       console.log(`ALERTA DISPARADO para o usuário ${alert.user.email}! Oportunidade: ${opportunity.project}, APY Atual: ${currentApy}%, Alvo: >${targetApy}%`);
 
-      // 5. Envia o email usando nosso EmailService
       await emailService.sendAlertEmail({
         to: alert.user.email,
         projectName: opportunity.project,
@@ -60,7 +54,6 @@ export async function checkAlerts() {
         currentApy: currentApy,
       });
 
-      // 6. IMPORTANTE: Desativa o alerta para não spamar o usuário
       await prisma.alert.update({
         where: { id: alert.id },
         data: { isActive: false },
@@ -71,4 +64,14 @@ export async function checkAlerts() {
   }
 
   console.log('--- Verificação de alertas concluída ---');
+}
+
+// --- BLOCO ADICIONADO ---
+// Este código verifica se o arquivo está sendo executado diretamente
+// e, em caso afirmativo, chama a função checkAlerts.
+if (require.main === module) {
+  checkAlerts().catch(e => {
+    console.error('Ocorreu um erro no worker de alertas:', e);
+    process.exit(1);
+  });
 }
