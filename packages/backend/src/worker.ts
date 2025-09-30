@@ -1,7 +1,15 @@
 import { PrismaClient } from '@prisma/client';
 import axios from 'axios';
 import EmailService from './services/EmailService';
-import { Opportunity } from './services/api'; // Reutilizamos o tipo do frontend
+
+interface Opportunity {
+  id: string;
+  project: string;
+  chain: string;
+  symbol: string;
+  apy: number;
+  tvlUsd: number;
+}
 
 const prisma = new PrismaClient();
 const emailService = new EmailService();

@@ -16,7 +16,7 @@ class FavoriteService {
       where: { user: { walletAddress } },
       select: { opportunityId: true }, // Só precisamos dos IDs
     });
-    return favorites.map(f => f.opportunityId);
+    return favorites.map((f: { opportunityId: string }) => f.opportunityId);
   }
 
   // Deleta um favorito
