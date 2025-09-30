@@ -6,6 +6,7 @@ dotenv.config();
 
 const prisma = new PrismaClient();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
 class BillingService {
   public async createCheckoutSession(walletAddress: string, frontendUrl: string) {
@@ -52,7 +53,6 @@ class BillingService {
   }
 
   public async handleWebhookEvent(signature: string, body: Buffer) {
-    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
     let event: Stripe.Event;
 
     try {
@@ -67,17 +67,22 @@ class BillingService {
         const session = event.data.object as Stripe.Checkout.Session;
         const userId = session.client_reference_id;
         
-        if (!userId) {
-          throw new Error('User ID not found in checkout session.');
+        if (!userId || !session.subscription) {
+          throw new Error('Required data not found in checkout session.');
         }
 
-        const subscription = await stripe.subscriptions.retrieve(session.subscription as string);
+        // --- A CORREÇÃO ESTÁ AQUI ---
+        // Adicionamos a anotação de tipo para guiar o TypeScript
+        const subscription: Stripe.Subscription = await stripe.subscriptions.retrieve(
+          session.subscription as string
+        );
 
         await prisma.user.update({
           where: { id: userId },
           data: {
             stripeCustomerId: session.customer as string,
             subscriptionStatus: SubscriptionStatus.PRO,
+            // Agora o TypeScript sabe que 'subscription.current_period_end' existe
             subscriptionEndsAt: new Date(subscription.current_period_end * 1000),
           },
         });
