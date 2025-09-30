@@ -16,7 +16,7 @@ const queryClient = new QueryClient();
 
 const config = getDefaultConfig({
   appName: 'DeFi Yield Finder',
-  projectId: 'SEU_PROJECT_ID_AQUI', // Lembre-se de colocar seu Project ID do WalletConnect
+  projectId: 'ae83400e5f2289928717a891b1dd3154',
   chains: [polygon, arbitrum, optimism],
   ssr: false, 
 });
