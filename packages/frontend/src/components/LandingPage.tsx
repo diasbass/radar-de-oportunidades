@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { Link } from 'react-router-dom'; // 1. Importar o Link
 
 // --- Interfaces ---
 interface LandingPageProps {
@@ -43,7 +44,9 @@ const Subtitle = styled.p`
   margin-right: auto;
 `;
 
-const CTAButton = styled.button`
+// 2. O botão agora é um Link estilizado
+const CTAButton = styled(Link)`
+  display: inline-block;
   background-color: #22d3ee;
   color: #0f172a;
   font-weight: bold;
@@ -52,6 +55,7 @@ const CTAButton = styled.button`
   padding: 1rem 2rem;
   font-size: 1rem;
   cursor: pointer;
+  text-decoration: none;
   transition: transform 0.2s, box-shadow 0.2s;
   margin-top: 2rem;
 
@@ -120,8 +124,8 @@ export function LandingPage({ onLaunchApp }: LandingPageProps) {
         <Title>DeFi Yield Finder</Title>
         <Subtitle>
           DeFi yields, simplified. Find the best stablecoin yields across multiple chains with real-time data.
-        </Subtitle>
-        <CTAButton onClick={onLaunchApp}>
+        </Subtitle>        
+        <CTAButton to="/app">
           Launch App
         </CTAButton>
       </HeroSection>
