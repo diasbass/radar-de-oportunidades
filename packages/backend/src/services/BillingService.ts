@@ -45,7 +45,6 @@ class BillingService {
         },
       ],
       client_reference_id: user.id,
-      // --- MUDANÇA AQUI: Pedimos ao Stripe para já incluir os dados da assinatura ---
       expand: ['subscription'],
       success_url: `${frontendUrl}?payment_success=true`,
       cancel_url: `${frontendUrl}?payment_canceled=true`,
@@ -68,21 +67,22 @@ class BillingService {
       case 'checkout.session.completed':
         const session = event.data.object as Stripe.Checkout.Session;
         const userId = session.client_reference_id;
-        
-        // --- MUDANÇA AQUI: Acessamos a assinatura diretamente do evento ---
         const subscription = session.subscription as Stripe.Subscription;
 
         if (!userId || !subscription) {
           throw new Error('Required data not found in checkout session.');
         }
+        
+        // --- A CORREÇÃO ESTÁ AQUI ---
+        // Acessamos a propriedade como uma string para evitar o erro de tipo do build.
+        const periodEnd = (subscription as any)['current_period_end'];
 
         await prisma.user.update({
           where: { id: userId },
           data: {
             stripeCustomerId: session.customer as string,
             subscriptionStatus: SubscriptionStatus.PRO,
-            // Agora o acesso a 'current_period_end' funciona corretamente
-            subscriptionEndsAt: new Date(subscription.current_period_end * 1000),
+            subscriptionEndsAt: new Date(periodEnd * 1000),
           },
         });
 
