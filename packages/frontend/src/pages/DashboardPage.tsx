@@ -69,6 +69,8 @@ export function DashboardPage() {
       queryClient.invalidateQueries({ queryKey: ['user', address] });
     }
   }, [address, queryClient]);
+  
+  const isPro = user?.subscriptionStatus === 'PRO';
 
   return (
     <PageContainer>
@@ -79,8 +81,8 @@ export function DashboardPage() {
             <Subtitle>DeFi yields, simplified.</Subtitle>
           </TitleBlock>
           <HeaderActions>
-            {isConnected && user?.subscriptionStatus === 'FREE' && <UpgradeButton />}
-            {isConnected && user?.subscriptionStatus === 'PRO' && <SubscriptionStatus />}
+            {isConnected && !isPro && <UpgradeButton />}
+            {isConnected && isPro && <SubscriptionStatus />}
             <ConnectButton />
           </HeaderActions>
         </HeaderContainer>
@@ -88,8 +90,8 @@ export function DashboardPage() {
       <MainContent>
         <Container>
           <ContentWrapper>
-            <EmailSettings />
-            <OpportunityList />
+            {isPro && <EmailSettings />}
+            <OpportunityList user={user} />
           </ContentWrapper>
         </Container>
       </MainContent>

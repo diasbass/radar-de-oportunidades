@@ -13,7 +13,8 @@ interface OpportunityCardProps {
   isFavorite: boolean;
   onToggleFavorite: () => void;
   isConnected: boolean;
-  onOpenAlertModal: () => void; // Prop para abrir o modal de alerta
+  onOpenAlertModal: () => void;
+  isPro: boolean;
 }
 
 // --- Formatador de Moeda ---
@@ -82,7 +83,7 @@ const FavoriteButton = styled(ActionButton)<{ $isFavorite: boolean }>`
 `;
 
 // --- Componente Principal ---
-export function OpportunityCard({ opportunity, isFavorite, onToggleFavorite, isConnected, onOpenAlertModal }: OpportunityCardProps) {
+export function OpportunityCard({ opportunity, isFavorite, onToggleFavorite, isConnected, onOpenAlertModal, isPro }: OpportunityCardProps) {
   return (
     <CardContainer>
       <InfoSection>
@@ -94,7 +95,8 @@ export function OpportunityCard({ opportunity, isFavorite, onToggleFavorite, isC
           <APY>{opportunity.apy}%</APY>
           <TVL>Liquidity: {currencyFormatter.format(opportunity.tvl)}</TVL>
         </DataSection>
-        {isConnected && (
+        
+        {isConnected && isPro && (
           <>
             <FavoriteButton onClick={onToggleFavorite} $isFavorite={isFavorite} title="Toggle Favorite">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill={isFavorite ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

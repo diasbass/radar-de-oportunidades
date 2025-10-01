@@ -13,8 +13,9 @@ import {
   loginUser,
   createAlert,
   fetchAlerts,
-  deleteAlert,  
+  deleteAlert,
   Opportunity,
+  User,
 } from "../services/api";
 
 // --- Constantes ---
@@ -166,7 +167,7 @@ function AlertsDashboard({ opportunities }: { opportunities: Opportunity[] | und
 }
 
 // --- Componente Principal ---
-export function OpportunityList() {
+export function OpportunityList({ user }: { user: User | undefined }) {
   const [selectedChain, setSelectedChain] = useState("Polygon");
   const [sortBy, setSortBy] = useState<"apy" | "tvl">("apy");
   const [minTvl, setMinTvl] = useState(10000);
@@ -180,6 +181,8 @@ export function OpportunityList() {
 
   const { address, isConnected } = useAccount();
   const queryClient = useQueryClient();
+
+  const isPro = user?.subscriptionStatus === 'PRO';
 
   useEffect(() => {
     if (isConnected && address) {
@@ -199,7 +202,7 @@ export function OpportunityList() {
   const { data: favoriteIds } = useQuery({
     queryKey: ["favorites", address],
     queryFn: () => fetchFavorites(address!),
-    enabled: !!address,
+    enabled: !!address && isPro,
   });
 
   const toggleFavoriteMutation = useMutation({
@@ -260,7 +263,7 @@ export function OpportunityList() {
   return (
     <>
       <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-        <AlertsDashboard opportunities={opportunities} />
+        {isPro && <AlertsDashboard opportunities={opportunities} />}
         <ControlsContainer>
           <FilterRow>
             <Label>Network:</Label>
@@ -310,6 +313,7 @@ export function OpportunityList() {
                 key={op.id}
                 opportunity={op}
                 isConnected={isConnected}
+                isPro={isPro}
                 isFavorite={favoriteIds?.includes(op.id) ?? false}
                 onToggleFavorite={() =>
                   toggleFavoriteMutation.mutate({
