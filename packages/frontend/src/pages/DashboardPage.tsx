@@ -80,10 +80,10 @@ export function DashboardPage() {
             <Title>DeFi Yield Finder</Title>
             <Subtitle>DeFi yields, simplified.</Subtitle>
           </TitleBlock>
-          <HeaderActions>
+          <HeaderActions data-section="section_connect-wallet">
             {isConnected && !isPro && <UpgradeButton />}
             {isConnected && isPro && <SubscriptionStatus />}
-            <ConnectButton />
+            <ConnectButton data-element="button_connect-wallet" />
           </HeaderActions>
         </HeaderContainer>
       </Header>

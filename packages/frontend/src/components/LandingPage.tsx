@@ -192,12 +192,12 @@ const Footer = styled.footer`
 export function LandingPage() {
   return (
     <LandingContainer>
-      <HeroSection>
+      <HeroSection data-section="section_destaque">
         <Title>DeFi Yield Finder</Title>
         <Subtitle>
           DeFi yields, simplified. Find the best stablecoin yields across multiple chains with real-time data.
         </Subtitle>
-        <CTAButton to="/app">
+        <CTAButton to="/app" data-element="button_lauch-app">
           Launch App
         </CTAButton>
       </HeroSection>
