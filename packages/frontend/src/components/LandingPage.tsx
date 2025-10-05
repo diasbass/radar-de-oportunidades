@@ -197,7 +197,7 @@ export function LandingPage() {
         <Subtitle>
           DeFi yields, simplified. Find the best stablecoin yields across multiple chains with real-time data.
         </Subtitle>
-        <CTAButton to="/app" data-element="button_lauch-app">
+        <CTAButton to="/app" data-element="button_launch-app">
           Launch App
         </CTAButton>
       </HeroSection>
