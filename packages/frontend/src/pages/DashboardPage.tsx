@@ -97,7 +97,7 @@ export function DashboardPage() {
             <Subtitle>DeFi yields, simplified.</Subtitle>
           </TitleBlock>
           <HeaderActions data-section="section_connect-wallet">
-            {isConnected && !isPro && <UpgradeButton />}
+            {isConnected && !isPro && <UpgradeButton data-element="button_upgrade" />}
             {isConnected && isPro && <SubscriptionStatus />}
             
             <ConnectButton.Custom>
