@@ -53,6 +53,22 @@ const HeaderActions = styled.div`
   gap: 1rem;
 `;
 
+const CustomConnectButton = styled.button`
+  background-color: #334155;
+  color: white;
+  border: 1px solid #475569;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: #cbd5e1;
+  }
+`;
+
 export function DashboardPage() {
   const { address, isConnected } = useAccount();
   const queryClient = useQueryClient();
@@ -69,7 +85,7 @@ export function DashboardPage() {
       queryClient.invalidateQueries({ queryKey: ['user', address] });
     }
   }, [address, queryClient]);
-  
+
   const isPro = user?.subscriptionStatus === 'PRO';
 
   return (
@@ -83,7 +99,67 @@ export function DashboardPage() {
           <HeaderActions data-section="section_connect-wallet">
             {isConnected && !isPro && <UpgradeButton />}
             {isConnected && isPro && <SubscriptionStatus />}
-            <ConnectButton data-element="button_connect-wallet" />
+            
+            <ConnectButton.Custom>
+              {({
+                account,
+                chain,
+                openAccountModal,
+                openChainModal,
+                openConnectModal,
+                authenticationStatus,
+                mounted,
+              }) => {
+                const ready = mounted && authenticationStatus !== 'loading';
+                const connected =
+                  ready &&
+                  account &&
+                  chain &&
+                  (!authenticationStatus ||
+                    authenticationStatus === 'authenticated');
+
+                return (
+                  <div
+                    {...(!ready && {
+                      'aria-hidden': true,
+                      'style': {
+                        opacity: 0,
+                        pointerEvents: 'none',
+                        userSelect: 'none',
+                      },
+                    })}
+                  >
+                    {(() => {
+                      if (!connected) {
+                        return (
+                          <CustomConnectButton
+                            onClick={openConnectModal}
+                            type="button"
+                            data-element="button_connect-wallet"
+                          >
+                            Connect Wallet
+                          </CustomConnectButton>
+                        );
+                      }
+
+                      if (chain.unsupported) {
+                        return (
+                          <CustomConnectButton onClick={openChainModal} type="button">
+                            Wrong network
+                          </CustomConnectButton>
+                        );
+                      }
+
+                      return (
+                        <CustomConnectButton onClick={openAccountModal} type="button">
+                          {account.displayName}
+                        </CustomConnectButton>
+                      );
+                    })()}
+                  </div>
+                );
+              }}
+            </ConnectButton.Custom>
           </HeaderActions>
         </HeaderContainer>
       </Header>
