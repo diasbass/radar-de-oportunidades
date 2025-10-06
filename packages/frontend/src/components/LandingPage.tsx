@@ -208,7 +208,7 @@ export function LandingPage() {
           <ExplanationBlock>
             <FeatureTitle>Earning Interest on Digital Dollars</FeatureTitle>
             <FeatureDescription>
-              Imagine a high-yield savings account, but for "digital dollars" (stablecoins). In the world of Decentralized Finance (DeFi), you can do just that by providing your tokens to **"liquidity pools."** These pools are collective funds that enable transactions and lending, and in return, you, as a liquidity provider, are rewarded with interest (yields).
+              Imagine a high-yield savings account, but for "digital dollars" (stablecoins). In the world of Decentralized Finance (DeFi), you can do just that by providing your tokens to <strong>"liquidity pools."</strong> These pools are collective funds that enable transactions and lending, and in return, you, as a liquidity provider, are rewarded with interest (yields).
               <br /><br />
               The challenge? There are thousands of these opportunities scattered across dozens of platforms and different blockchains. Finding the best and safest ones is a complex task.
             </FeatureDescription>
