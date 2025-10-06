@@ -9,7 +9,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchUser, User } from '../services/api';
 import { SubscriptionStatus } from '../components/SubscriptionStatus';
 
-// --- Styled Components ---
+// --- Styled Components (sem alterações) ---
 const PageContainer = styled.div`
   min-height: 100vh;
 `;
@@ -69,6 +69,13 @@ const CustomConnectButton = styled.button`
   }
 `;
 
+// Declaramos a window com o tipo do dataLayer para o TypeScript
+interface WindowWithDataLayer extends Window {
+  dataLayer: any[];
+}
+declare const window: WindowWithDataLayer;
+
+
 export function DashboardPage() {
   const { address, isConnected } = useAccount();
   const queryClient = useQueryClient();
@@ -82,10 +89,36 @@ export function DashboardPage() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('payment_success')) {
+      // Invalida o cache do usuário para buscar o status PRO
       queryClient.invalidateQueries({ queryKey: ['user', address] });
+      
+      // --- LÓGICA DO dataLayer.push ADICIONADA AQUI ---
+      if (window.dataLayer) {
+        const transactionId = `txn-${new Date().getTime()}`; // Gera um ID de transação único
+
+        window.dataLayer.push({
+          'event': 'product_purchased',
+          'transaction': {
+            'currency': 'USD',
+            'id': transactionId, 
+            'affiliation': 'Stripe',
+            'value': 6.99 
+          },
+          'product_details': [
+            {
+              'item_name': 'DeFi Yield Finder PRO', // Nome do produto
+              'item_id': 'DYF_PRO_MONTHLY', // Um ID/SKU para seu produto
+              'price': 6.99,
+              'discount': 0,
+              'currency': 'USD',
+              'item_brand': 'DeFi Yield Finder',
+            }
+          ]
+        });
+      }
     }
   }, [address, queryClient]);
-
+  
   const isPro = user?.subscriptionStatus === 'PRO';
 
   return (
