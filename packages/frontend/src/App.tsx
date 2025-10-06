@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { LandingPage } from './components/LandingPage';
 import { DashboardPage } from './pages/DashboardPage';
+import { FeaturesPage } from './components/FeaturesPage'; // Importe a nova página
 import { usePageTracking } from './hooks/usePageTracking'; // 1. Importar o hook
 
 // 2. Criar um componente que usa o hook
@@ -19,6 +20,7 @@ function App() {
 
         {/* Rota para o aplicativo principal "/app" */}
         <Route path="/app" element={<DashboardPage />} />
+        <Route path="/features" element={<FeaturesPage />} /> {/* Nova Rota */}
       </Routes>
     </BrowserRouter>
   );
