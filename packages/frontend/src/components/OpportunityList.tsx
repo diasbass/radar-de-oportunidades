@@ -265,13 +265,14 @@ export function OpportunityList({ user }: { user: User | undefined }) {
       <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
         {isPro && <AlertsDashboard opportunities={opportunities} />}
         <ControlsContainer>
-          <FilterRow>
+          <FilterRow data-section="section_network-filter"> {/* <-- ATRIBUTO DA SEÇÃO AQUI */}
             <Label>Network:</Label>
             {CHAINS.map((chain) => (
               <ChainButton
                 key={chain}
                 onClick={() => setSelectedChain(chain)}
                 $active={selectedChain === chain}
+                data-element={`button_${chain.toLowerCase()}`} // <-- ATRIBUTO DINÂMICO DO ELEMENTO AQUI
               >
                 {chain}
               </ChainButton>
