@@ -4,8 +4,8 @@ import styled from 'styled-components';
 import { createCheckoutSession } from '../services/api';
 
 const StyledButton = styled.button`
-  background-color: #facc15; /* Amarelo */
-  color: #1c1917; /* Preto/Cinza escuro */
+  background-color: #facc15;
+  color: #1c1917;
   font-weight: bold;
   border: none;
   border-radius: 0.5rem;
@@ -24,13 +24,13 @@ const StyledButton = styled.button`
   }
 `;
 
-export function UpgradeButton() {
+// 1. A função agora aceita 'props' como argumento
+export function UpgradeButton(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   const { address, isConnected } = useAccount();
 
   const { mutate, isPending } = useMutation({
     mutationFn: () => createCheckoutSession(address!),
     onSuccess: (data) => {
-      // Se a chamada à API for bem-sucedida, redireciona para a URL do Stripe
       if (data.url) {
         window.location.href = data.url;
       }
@@ -41,7 +41,6 @@ export function UpgradeButton() {
     },
   });
 
-  // Não mostra o botão se o usuário não estiver conectado
   if (!isConnected) {
     return null;
   }
@@ -53,7 +52,8 @@ export function UpgradeButton() {
   };
 
   return (
-    <StyledButton onClick={handleUpgradeClick} disabled={isPending}>
+    // 2. As 'props' são "espalhadas" no botão, passando o data-element
+    <StyledButton onClick={handleUpgradeClick} disabled={isPending} {...props}>
       {isPending ? 'Redirecting...' : 'Upgrade to PRO'}
     </StyledButton>
   );
