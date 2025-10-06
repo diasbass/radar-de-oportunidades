@@ -26,7 +26,9 @@ import {
   RoadmapColumn,
   RoadmapTitle,
   RoadmapList,
-  RoadmapItem
+  RoadmapItem,
+  FooterNav,  // Import new component
+  FooterLink  // Import new component
 } from './ui/Layout'; // Ajuste o caminho conforme sua estrutura de pastas
 
 // --- Componente Principal ---
@@ -149,6 +151,11 @@ export function LandingPage() {
       </Section>
 
       <Footer>
+        <FooterNav>
+          <FooterLink to="/">Home</FooterLink>
+          <FooterLink to="/features">Features</FooterLink>
+          <FooterLink to="/app">Launch App</FooterLink>
+        </FooterNav>
         <p>© {new Date().getFullYear()} DeFi Yield Finder. All rights reserved.</p>
       </Footer>
     </LandingContainer>

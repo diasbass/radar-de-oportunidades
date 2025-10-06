@@ -8,6 +8,7 @@ import { useAccount } from 'wagmi';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchUser, User } from '../services/api';
 import { SubscriptionStatus } from '../components/SubscriptionStatus';
+import { Link } from 'react-router-dom'; // Import Link
 
 // --- Styled Components (sem alterações) ---
 const PageContainer = styled.div`
@@ -66,6 +67,17 @@ const CustomConnectButton = styled.button`
 
   &:hover {
     border-color: #cbd5e1;
+  }
+`;
+
+// --- NEW HEADER LINK COMPONENT ---
+const HeaderLink = styled(Link)`
+  font-size: 0.875rem;
+  color: #94a3b8;
+  text-decoration: none;
+  margin-top: 0.5rem;
+  &:hover {
+    text-decoration: underline;
   }
 `;
 
@@ -128,6 +140,7 @@ export function DashboardPage() {
           <TitleBlock>
             <Title>DeFi Yield Finder</Title>
             <Subtitle>DeFi yields, simplified.</Subtitle>
+            <HeaderLink to="/features">See Features</HeaderLink>
           </TitleBlock>
           <HeaderActions data-section="section_connect-wallet">
             {isConnected && !isPro && <UpgradeButton data-element="button_upgrade" />}

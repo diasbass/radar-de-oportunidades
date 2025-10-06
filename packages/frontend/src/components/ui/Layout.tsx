@@ -4,7 +4,7 @@ import styled from 'styled-components';
 // Todos os componentes de layout e estilo que você quer reutilizar
 // vão aqui, já com "export".
 
-// --- Styled Components (No changes here) ---
+// --- Styled Components ---
 export const LandingContainer = styled.div`
   background-color: #0f172a;
   color: #f8fafc;
@@ -188,4 +188,23 @@ export const Footer = styled.footer`
   padding: 2rem;
   color: #64748b;
   border-top: 1px solid #334155;
+`;
+
+// --- NEW FOOTER NAVIGATION COMPONENTS ---
+export const FooterNav = styled.nav`
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+`;
+
+export const FooterLink = styled(Link)`
+  color: #94a3b8;
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: color 0.2s;
+
+  &:hover {
+    color: #e2e8f0;
+  }
 `;
