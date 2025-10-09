@@ -11,6 +11,11 @@ import BillingController from './controllers/BillingController';
 import { checkAlerts } from './worker';
 import { isProSubscriber } from './middleware/authMiddleware'; // 1. Importar
 
+const corsOptions = {
+  origin: 'https://www.defiyieldfinder.com',
+  optionsSuccessStatus: 200 // Para navegadores mais antigos
+};
+
 dotenv.config();
 
 const app = express();
