@@ -16,6 +16,12 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3333;
 
+const corsOptions = {
+  origin: 'https://www.defiyieldfinder.com',
+  optionsSuccessStatus: 200 // Para navegadores mais antigos
+};
+app.use(cors(corsOptions));
+
 const opportunitiesController = new OpportunitiesController();
 const userController = new UserController();
 const favoriteController = new FavoriteController();
