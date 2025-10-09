@@ -38,7 +38,7 @@ class OpportunitiesService {
 
     // --- A MUDANÇA ESTÁ AQUI ---
     // Antes: Apenas 'Polygon'. Agora: um array com múltiplas redes.
-    const chainsToInclude = ['Polygon', 'Arbitrum', 'Optimism'];
+    const chainsToInclude = ['Polygon', 'Arbitrum', 'Optimism', 'Base'];
     const stablecoins = ['USDC', 'USDT', 'DAI'];
 
     const filteredPools = pools.filter(pool =>

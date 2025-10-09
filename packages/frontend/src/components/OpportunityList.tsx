@@ -19,7 +19,7 @@ import {
 } from "../services/api";
 
 // --- Constantes ---
-const CHAINS = ["Polygon", "Arbitrum", "Optimism"];
+const CHAINS = ["Polygon", "Arbitrum", "Optimism", "Base"];
 const SORT_OPTIONS = { apy: "Highest APY", tvl: "Highest Liquidity" };
 const MIN_TVL_OPTIONS = {
   "10000": "> $10k",
