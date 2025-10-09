@@ -9,6 +9,29 @@ const createFavoriteSchema = z.object({
 });
 
 class FavoriteController {
+  public async toggle(req: Request, res: Response): Promise<Response> {
+    try {
+      const { walletAddress, opportunityId } = favoriteSchema.parse(req.body);
+      
+      const userService = new UserService();
+      const user = await userService.findOrCreate(walletAddress);
+
+      const favoriteService = new FavoriteService();
+      const existingFavorite = await favoriteService.find(user.id, opportunityId);
+
+      if (existingFavorite) {
+        await favoriteService.delete(user.id, opportunityId);
+        return res.status(200).json({ status: 'removed' });
+      } else {
+        await favoriteService.create(user.id, opportunityId);
+        return res.status(201).json({ status: 'created' });
+      }
+    } catch (error: any) {
+      console.error("Error toggling favorite:", error);
+      return res.status(500).json({ message: 'Failed to toggle favorite.' });
+    }
+  }
+  
   public async create(req: Request, res: Response): Promise<Response> {
     try {
       const { walletAddress, opportunityId } = createFavoriteSchema.parse(req.body);

@@ -31,10 +31,10 @@ class AlertController {
     }
   }
 
-  public async list(req: Request, res: Response): Promise<Response> {
+    public async list(req: Request, res: Response): Promise<Response> {
     try {
       const { walletAddress } = req.params;
-
+      
       const userService = new UserService();
       const user = await userService.findOrCreate(walletAddress);
 
@@ -42,8 +42,9 @@ class AlertController {
       const alerts = await alertService.list(user.id);
 
       return res.status(200).json(alerts);
-    } catch (error) {
-       return res.status(400).json({ message: 'Invalid wallet address.' });
+    } catch (error: any) { // Mudança para capturar e logar o erro
+       console.error("Error fetching alerts:", error);
+       return res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
   }
 

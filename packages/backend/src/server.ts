@@ -11,11 +11,6 @@ import BillingController from './controllers/BillingController';
 import { checkAlerts } from './worker';
 import { isProSubscriber } from './middleware/authMiddleware'; // 1. Importar
 
-const corsOptions = {
-  origin: 'https://www.defiyieldfinder.com',
-  optionsSuccessStatus: 200 // Para navegadores mais antigos
-};
-
 dotenv.config();
 
 const app = express();
@@ -41,8 +36,7 @@ app.post('/api/billing/create-checkout-session', billingController.createCheckou
 
 // --- ROTAS PROTEGIDAS (PRO) ---
 // 2. Adicionar o 'isProSubscriber' antes do controller
-app.post('/api/favorites', isProSubscriber, favoriteController.create);
-app.delete('/api/favorites', isProSubscriber, favoriteController.delete);
+app.post('/api/favorites/toggle', isProSubscriber, favoriteController.toggle); // Rota atualizada
 app.get('/api/favorites/:walletAddress', isProSubscriber, favoriteController.list);
 
 app.post('/api/alerts', isProSubscriber, alertController.create);

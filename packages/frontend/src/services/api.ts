@@ -59,12 +59,8 @@ export async function fetchFavorites(walletAddress: string): Promise<string[]> {
   return data;
 }
 
-export async function addFavorite(walletAddress: string, opportunityId: string) {
-  return apiClient.post('/favorites', { walletAddress, opportunityId });
-}
-
-export async function removeFavorite(walletAddress: string, opportunityId: string) {
-  return apiClient.delete('/favorites', { data: { walletAddress, opportunityId } });
+export async function toggleFavorite(walletAddress: string, opportunityId: string) {
+  return apiClient.post('/favorites/toggle', { walletAddress, opportunityId });
 }
 
 export async function createAlert(walletAddress: string, opportunityId: string, targetApy: number) {
