@@ -34,7 +34,7 @@ const apiClient = axios.create({
 });
 
 
-// --- Funções da API (agora usando apiClient) ---
+// --- Funções da API ---
 
 export async function fetchOpportunities(): Promise<Opportunity[]> {
   const { data } = await apiClient.get('/opportunities');
@@ -59,9 +59,11 @@ export async function fetchFavorites(walletAddress: string): Promise<string[]> {
   return data;
 }
 
+// --- FUNÇÕES DE FAVORITO ATUALIZADAS ---
 export async function toggleFavorite(walletAddress: string, opportunityId: string) {
   return apiClient.post('/favorites/toggle', { walletAddress, opportunityId });
 }
+// As funções addFavorite e removeFavorite foram removidas
 
 export async function createAlert(walletAddress: string, opportunityId: string, targetApy: number) {
   return apiClient.post('/alerts', { walletAddress, opportunityId, targetApy });

@@ -9,18 +9,12 @@ import FavoriteController from './controllers/FavoriteController';
 import AlertController from './controllers/AlertController';
 import BillingController from './controllers/BillingController';
 import { checkAlerts } from './worker';
-import { isProSubscriber } from './middleware/authMiddleware'; // 1. Importar
+import { isProSubscriber } from './middleware/authMiddleware';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3333;
-
-const corsOptions = {
-  origin: 'https://www.defiyieldfinder.com',
-  optionsSuccessStatus: 200 // Para navegadores mais antigos
-};
-app.use(cors(corsOptions));
 
 const opportunitiesController = new OpportunitiesController();
 const userController = new UserController();
@@ -28,30 +22,33 @@ const favoriteController = new FavoriteController();
 const alertController = new AlertController();
 const billingController = new BillingController();
 
+const corsOptions = {
+  origin: 'https://www.defiyieldfinder.com',
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
+
 app.post('/api/billing/webhook', express.raw({ type: 'application/json' }), billingController.handleWebhook);
 
-app.use(cors());
 app.use(express.json());
 
 app.get('/', (req, res) => { res.send('DeFi Yield Finder API Running!'); });
 
 // --- ROTAS PÚBLICAS ---
 app.get('/api/opportunities', opportunitiesController.handle);
-app.post('/api/users', userController.handle); // O login é público
+app.post('/api/users', userController.handle);
 app.post('/api/billing/create-checkout-session', billingController.createCheckoutSession);
 
 // --- ROTAS PROTEGIDAS (PRO) ---
-// 2. Adicionar o 'isProSubscriber' antes do controller
-app.post('/api/favorites/toggle', isProSubscriber, favoriteController.toggle); // Rota atualizada
+// --- ROTAS DE FAVORITOS ATUALIZADAS ---
+app.post('/api/favorites/toggle', isProSubscriber, favoriteController.toggle);
 app.get('/api/favorites/:walletAddress', isProSubscriber, favoriteController.list);
 
 app.post('/api/alerts', isProSubscriber, alertController.create);
 app.get('/api/alerts/:walletAddress', isProSubscriber, alertController.list);
 app.delete('/api/alerts/:id', isProSubscriber, alertController.delete);
 
-// A rota para ATUALIZAR o email também deve ser PRO
 app.patch('/api/users/:walletAddress', isProSubscriber, userController.update);
-
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
