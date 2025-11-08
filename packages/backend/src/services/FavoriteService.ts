@@ -26,7 +26,7 @@ class FavoriteService {
       where: { user: { walletAddress } },
       select: { opportunityId: true },
     });
-    return favorites.map(f => f.opportunityId);
+    return favorites.map((f: { opportunityId: string }) => f.opportunityId);
   }
 
   public async delete(userId: string, opportunityId: string) {

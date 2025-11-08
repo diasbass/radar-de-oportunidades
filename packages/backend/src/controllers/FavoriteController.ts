@@ -19,15 +19,12 @@ class FavoriteController {
       const user = await userService.findOrCreate(walletAddress);
 
       const favoriteService = new FavoriteService();
-      // Verifica se o favorito já existe
       const existingFavorite = await favoriteService.find(user.id, opportunityId);
 
       if (existingFavorite) {
-        // Se existe, deleta
         await favoriteService.delete(user.id, opportunityId);
         return res.status(200).json({ status: 'removed' });
       } else {
-        // Se não existe, cria
         await favoriteService.create(user.id, opportunityId);
         return res.status(201).json({ status: 'created' });
       }
@@ -40,10 +37,14 @@ class FavoriteController {
   public async list(req: Request, res: Response): Promise<Response> {
     const { walletAddress } = req.params;
 
-    const favoriteService = new FavoriteService();
-    const favoriteIds = await favoriteService.list(walletAddress);
-
-    return res.status(200).json(favoriteIds);
+    try {
+      const favoriteService = new FavoriteService();
+      const favoriteIds = await favoriteService.list(walletAddress);
+      return res.status(200).json(favoriteIds);
+    } catch (error: any) {
+      console.error("Error fetching favorites:", error);
+      return res.status(500).json({ message: 'Internal Server Error' });
+    }
   }
 }
 

@@ -8,11 +8,12 @@ import { CreateAlertModal } from "./CreateAlertModal";
 import {
   fetchOpportunities,
   fetchFavorites,
-  toggleFavorite, // Alterado aqui
+  toggleFavorite, // Alterado aqui: addFavorite e removeFavorite saíram
   loginUser,
   createAlert,
   fetchAlerts,
   deleteAlert,
+  Alert,
   Opportunity,
   User,
 } from "../services/api";
@@ -204,14 +205,16 @@ export function OpportunityList({ user }: { user: User | undefined }) {
     enabled: !!address && isPro,
   });
 
+  // --- MUTATION DE FAVORITO ATUALIZADA ---
   const toggleFavoriteMutation = useMutation({
-    mutationFn: (opportunityId: string) => {
+    mutationFn: (opportunityId: string) => { // Agora só precisa do ID
       return toggleFavorite(address!, opportunityId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["favorites", address] });
     },
   });
+  // --- FIM DA MUDANÇA ---
 
   const createAlertMutation = useMutation({
     mutationFn: (variables: { opportunityId: string; targetApy: number }) => {
@@ -308,6 +311,7 @@ export function OpportunityList({ user }: { user: User | undefined }) {
                 isConnected={isConnected}
                 isPro={isPro}
                 isFavorite={favoriteIds?.includes(op.id) ?? false}
+                // --- CHAMADA DA MUTATION ATUALIZADA ---
                 onToggleFavorite={() => toggleFavoriteMutation.mutate(op.id)}
                 onOpenAlertModal={() =>
                   setModalState({ isOpen: true, opportunity: op })
