@@ -22,27 +22,51 @@ const favoriteController = new FavoriteController();
 const alertController = new AlertController();
 const billingController = new BillingController();
 
+// --- ALTERAÇÕES DE CORS AQUI ---
+// Tornamos a política de CORS mais explícita para aceitar os métodos e headers
+// que o frontend (axios/react-query) está enviando.
 const corsOptions = {
   origin: 'https://www.defiyieldfinder.com',
-  optionsSuccessStatus: 200
+  methods: 'GET,POST,PUT,DELETE,PATCH,OPTIONS', // Permite os métodos usados
+  allowedHeaders: 'Content-Type,Authorization', // Permite os cabeçalhos
+  optionsSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
 
-app.post('/api/billing/webhook', express.raw({ type: 'application/json' }), billingController.handleWebhook);
+// Esta é a linha principal da correção:
+// Ela responde OK para todas as requisições "pre-flight" OPTIONS do navegador.
+app.options('*', cors(corsOptions));
+// --- FIM DAS ALTERAÇÕES ---
+
+
+app.post(
+  '/api/billing/webhook',
+  express.raw({ type: 'application/json' }),
+  billingController.handleWebhook
+);
 
 app.use(express.json());
 
-app.get('/', (req, res) => { res.send('DeFi Yield Finder API Running!'); });
+app.get('/', (req, res) => {
+  res.send('DeFi Yield Finder API Running!');
+});
 
 // --- ROTAS PÚBLICAS ---
 app.get('/api/opportunities', opportunitiesController.handle);
 app.post('/api/users', userController.handle);
-app.post('/api/billing/create-checkout-session', billingController.createCheckoutSession);
+app.post(
+  '/api/billing/create-checkout-session',
+  billingController.createCheckoutSession
+);
 
 // --- ROTAS PROTEGIDAS (PRO) ---
 // --- ROTAS DE FAVORITOS ATUALIZADAS ---
 app.post('/api/favorites/toggle', isProSubscriber, favoriteController.toggle);
-app.get('/api/favorites/:walletAddress', isProSubscriber, favoriteController.list);
+app.get(
+  '/api/favorites/:walletAddress',
+  isProSubscriber,
+  favoriteController.list
+);
 
 app.post('/api/alerts', isProSubscriber, alertController.create);
 app.get('/api/alerts/:walletAddress', isProSubscriber, alertController.list);
@@ -52,5 +76,7 @@ app.patch('/api/users/:walletAddress', isProSubscriber, userController.update);
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  cron.schedule('0 * * * *', () => { checkAlerts(); });
+  cron.schedule('0 * * * *', () => {
+    checkAlerts();
+  });
 });
