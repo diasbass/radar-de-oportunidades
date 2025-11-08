@@ -22,9 +22,8 @@ const favoriteController = new FavoriteController();
 const alertController = new AlertController();
 const billingController = new BillingController();
 
-// --- ALTERAÇÕES DE CORS AQUI ---
-// Tornamos a política de CORS mais explícita para aceitar os métodos e headers
-// que o frontend (axios/react-query) está enviando.
+// --- CORREÇÃO DE CORS APLICADA ---
+// Mantemos as opções detalhadas para o pre-flight
 const corsOptions = {
   origin: 'https://www.defiyieldfinder.com',
   methods: 'GET,POST,PUT,DELETE,PATCH,OPTIONS', // Permite os métodos usados
@@ -33,10 +32,9 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-// Esta é a linha principal da correção:
-// Ela responde OK para todas as requisições "pre-flight" OPTIONS do navegador.
-app.options('*', cors(corsOptions));
-// --- FIM DAS ALTERAÇÕES ---
+// A linha 'app.options('*', ...)' foi REMOVIDA daqui, pois causou o crash.
+// app.use(cors(corsOptions)) já lida com requisições OPTIONS.
+// --- FIM DA CORREÇÃO ---
 
 
 app.post(
@@ -60,7 +58,6 @@ app.post(
 );
 
 // --- ROTAS PROTEGIDAS (PRO) ---
-// --- ROTAS DE FAVORITOS ATUALIZADAS ---
 app.post('/api/favorites/toggle', isProSubscriber, favoriteController.toggle);
 app.get(
   '/api/favorites/:walletAddress',
